@@ -1,0 +1,62 @@
+#talk {
+	margin: 2.8% auto 1% auto;
+	text-align: center;
+	font-family: coder;
+	font-smooth: never;
+	color: #4091F4;
+	font-size: 28px;
+	
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+#board {
+	margin: 0 auto;
+	border-spacing: 10px;
+	float: left;
+	background: #4B7DBA;;
+	border: 2px solid #073976;
+}
+
+.slot {
+	border-radius: 70px;
+	background: #fff;
+	border: 2px solid #073976;
+	width: 55px;
+	height: 55px;
+}
+
+#wins {
+	width: 582px;
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.human_board
+{
+	float: left;
+	width: 200px;
+}
+
+#wins span
+{
+	display: block;
+	text-align: center;
+}
+
+#wins .human {
+	color: #F0314C;
+}
+
+.computer_board
+{
+	float: right;
+	width: 200px;
+}
+
+#wins .computer {
+	color: #F4C829;
+}

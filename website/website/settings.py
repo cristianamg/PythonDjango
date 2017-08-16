@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'NLinea.apps.NlineaConfig',
     'autenticar.apps.LoginConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',  # <--
 ]
 
 ROOT_URLCONF = 'website.urls'
@@ -64,12 +66,29 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',  # <--
+                'social_django.context_processors.login_redirect',  # <--
             ],
         },
     },
 ]
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
 
+    'django.contrib.auth.backends.ModelBackend',
+)
 WSGI_APPLICATION = 'website.wsgi.application'
+
+SOCIAL_AUTH_FACEBOOK_KEY = '338592443264708'  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = 'ef90c8448965fb2cd6144b134f2fe32e'  # App Secret
+
+SOCIAL_AUTH_TWITTER_KEY = 'I687Q6RrOJe6fifIDpfD0IG4X'
+SOCIAL_AUTH_TWITTER_SECRET = 'E0nZ0FdygYNdjv3HC9IRPoNoBaeyDJoV6M3crWQvNMLpNdhShn'
+
+SOCIAL_AUTH_GITHUB_KEY = 'b247995db696557656d2'
+SOCIAL_AUTH_GITHUB_SECRET = '2d02881f02057e1f36686d0a00e9ad6c39f04418'
 
 
 # Database
