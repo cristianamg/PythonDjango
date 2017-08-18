@@ -6,6 +6,12 @@
 
 {% block header %}
     Este es el header del game nlinea
+    {% if user.is_authenticated %}
+        {{ user.username }}
+        {{ user.email }}
+    {% else %}
+        Not logged in.
+    {% endif %}
 {% endblock %}
 
 {%block contect%}
