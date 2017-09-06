@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'social_django',
     'jugador.apps.JugadorConfig',
     'Partida.apps.PartidaConfig',
+
 ]
 
 MIDDLEWARE = [

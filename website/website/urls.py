@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^accounts/profile/', include('NLinea.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^oauth/', include('social_django.urls', namespace='social')),  # <--
+    url(r'^principal/', include('Partida.urls')),
 ]
