@@ -19,7 +19,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^', include('autenticar.urls')),
-    url(r'^accounts/profile/', include('NLinea.urls')),
+    url(r'^accounts/profile/', include('Partida.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^oauth/', include('social_django.urls', namespace='social')),  # <--
     url(r'^principal/', include('Partida.urls')),
