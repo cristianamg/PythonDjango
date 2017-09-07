@@ -79,7 +79,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.twitter.TwitterOAuth',
     'social_core.backends.facebook.FacebookOAuth2',
-
     'django.contrib.auth.backends.ModelBackend',
 )
 WSGI_APPLICATION = 'website.wsgi.application'
@@ -131,6 +130,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Log out
+SOCIAL_AUTH_DISCONNECT_PIPELINE = (
+    # Verifies that the social association can be disconnected from the current
+    # user (ensure that the user login mechanism is not compromised by this
+    # disconnection).
+    'social_core.pipeline.disconnect.allowed_to_disconnect',
+
+    # Collects the social associations to disconnect.
+    'social_core.pipeline.disconnect.get_entries',
+
+    # Revoke any access_token when possible.
+    'social_core.pipeline.disconnect.revoke_tokens',
+
+    # Removes the social associations.
+    'social_core.pipeline.disconnect.disconnect',
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
