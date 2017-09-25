@@ -12,19 +12,61 @@
                 {%load static%}
                 <img src="{%static 'img/player.png'%}" class="img-circle" height="42" width="42">
                  {% if user.is_authenticated %}
-                    <h5>User {{ user.username }}</h5>
+                     {% for jugador in jugadores %}
+                        {% if jugador.IDJugador == user.id %}
+                            {% if jugador.NickName == "" %}
+                                <h5>User {{ user.username }}</h5>
+                            {% else %}
+                               <h5>User {{ jugador.NickName }}</h5>
+                            {% endif %}
+                        {% else %}
+                        {% endif %}
+                    {% endfor %}
                      <h6>Email: {{ user.email }}</h6>
                 {% else %}
                     Not logged in.
                 {% endif %}
         </div>
 		<div class="col-xs-6 col-md-4">
-			<button type="button" class="btn btn-default btn-group pull-right">
-			  <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+			<a href="/logout">
+			    <button type="button" class="btn btn-default btn-group pull-right">
+			    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+			    </button>
+            </a>
+			<button type="button"  class="btn btn-default btn-group pull-right">
+			  <span class="glyphicon glyphicon-cog"  data-toggle="modal" data-target="#actualizarPerfil"
+                    aria-hidden="true"></span>
 			</button>
-			<button type="button" class="btn btn-default btn-group pull-right">
-			  <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-			</button>
+
+            <div id="actualizarPerfil" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Ingrese un Nickname</h4>
+                      </div>
+                      <div class="modal-body">
+                          <form class="actualizarNick">
+                              <div class="hide">
+                                    ID:<input type="text" id="ID" name="ID" value="{{ user.id }}">
+                                </div>
+                              <div class="form-group">
+                                  <label for="nick">Nickname:</label>
+                                  <input name="nick" id="nick" type="text" class="form-control">
+                                </div>
+                              <button type="submit" class="btn btn-primary" >Actualizar</button>
+                          </form>
+                      </div>
+                      <div class="modal-footer">
+
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
 
 		</div>
     </div>
@@ -40,11 +82,46 @@
             <div class="col-md-4">
                 <h1>Partidas Disponibles</h1>
                 <ul class="list-group">
-
                      {% for partida in partidas %}
                         {% if partida.Estado == "Buscando" %}
-                             <li class="list-group-item">{{ partida.IDJugadorUno }}</li>
+                             <li class="list-group-item"><button type="button" value="{{ partida.id }}" onclick='jugar(this)'class="btn btn-md center-block">
+                                 <strong>Creador:</strong>
+                                 {% for jugador in jugadores %}
+                                    {% if jugador.IDJugador == partida.IDJugadorUno %}
+                                        {{ jugador.NickName }}
+                                        <strong>Juegos ganados:</strong> {{ jugador.CantidadGanes }}
+                                    {% endif %}
+                                 {% endfor %}
+                                 <strong>Estado:</strong> {{ partida.Estado }}
+                             </button></li>
                         {% else %}
+                            {% if partida.Estado == "Pausa" %}
+                                 {% if partida.IDJugadorUno == user.id %}
+                                     <li class="list-group-item"><button type="button" value="{{ partida.id }}" onclick='jugar(this)' class="btn btn-md center-block">
+                                         <strong>Creador:</strong>
+                                         {% for jugador in jugadores %}
+                                            {% if jugador.IDJugador == partida.IDJugadorUno %}
+                                                {{ jugador.NickName }}
+                                                <strong>Juegos ganados:</strong> {{ jugador.CantidadGanes }}
+                                            {% endif %}
+                                         {% endfor %}
+                                         <strong>Estado:</strong> {{ partida.Estado }}
+                                     </button></li>
+                                 {% endif %}
+                                {% if partida.IDJugadorDOs == user.id %}
+                                     <li class="list-group-item"><button type="button" value="{{ partida.id }}"  onclick='jugar(this)' class="btn btn-md center-block">
+                                         <strong>Creador:</strong>
+                                         {% for jugador in jugadores %}
+                                                {% if jugador.IDJugador == partida.IDJugadorUno %}
+                                                    {{ jugador.NickName }}
+                                                    <strong>Juegos ganados:</strong> {{ jugador.CantidadGanes }}
+                                                {% endif %}
+                                         {% endfor %}
+                                         <strong>Estado:</strong> {{ partida.Estado }}
+                                     </button></li>
+                                 {% endif %}
+
+                            {% endif %}
                         {% endif %}
                     {% endfor %}
 
@@ -61,7 +138,6 @@
                 </button>
                 <div id="modalCrearPartida" class="modal fade" role="dialog">
                   <div class="modal-dialog">
-
                     <!-- Modal content-->
                     <div class="modal-content">
                       <div class="modal-header">
@@ -82,17 +158,40 @@
                           </form>
                       </div>
                       <div class="modal-footer">
-
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                       </div>
                     </div>
+                  </div>
+                </div>
+                <br>
+                <br>
 
+                <button type="button" class="btn btn-primary btn-lg center-block"
+                        data-toggle="modal" data-target="#modalMisEstadisticas">Mis Estadisticas</button>
+                <div id="modalMisEstadisticas" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Mis Estadisticas</h4>
+                      </div>
+                      <div class="modal-body">
+                                {% for jugador in jugadores %}
+                                    {% if jugador.IDJugador == user.id %}
+                                        <h1>Nick: {{ jugador.NickName }}</h1>
+                                        <h1>Paridas jugadas: {{ jugador.CantidadJuegos }}</h1>
+                                        <h1>Paridas ganadas: {{ jugador.CantidadGanes }}</h1>
+                                    {% endif %}
+                                {% endfor %}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <br>
-                <br>
-                <button type="button" class="btn center-block">Mis Estadisticas</button>
             </div>
 
             <div class="col-md-4">
@@ -101,10 +200,26 @@
                      {% for partida in partidas %}
                         {% if partida.Estado == "Terminada"%}
                             {% if partida.IDJugadorUno == user.id  %}
-                                <li class="list-group-item">{{ partida.Estado}}</li>
+                                <li class="list-group-item">
+                                    <button type="button" class="btn btn-md center-block">
+                                     {{ partida.Estado}} VS
+                                        {% for jugador in jugadores %}
+                                            {% if jugador.IDJugador == partida.IDJugadorDOs%}
+                                                    {{ jugador.NickName }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </button>
+                                    </li>
                             {% else %}
                                 {% if partida.IDJugadorDOs == user.id  %}
-                                    <li class="list-group-item">{{ partida.Estado}}</li>
+                                    <li class="list-group-item"><button type="button" class="btn btn-md center-block">
+                                     {{ partida.Estado}} VS
+                                        {% for jugador in jugadores %}
+                                            {% if jugador.IDJugador == partida.IDJugadorUno%}
+                                                    {{ jugador.NickName }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </button></li>
                                 {% endif %}
                             {% endif %}
                         {% else %}
@@ -129,13 +244,24 @@
        }
 
     });
+    function jugar(objButton){
+        window.location.href = 'http://localhost:8000/juego/?n='+objButton.value;
+    }
     $(function() {
       $('.crear').submit(function(){
           $.post('http://localhost:8080/UpdateMisPartidas?'+'ID='+$("#ID").val());
         $.post('http://localhost:8080/CrearPartida?'+'ID='+$("#ID").val()+'&tamano='+$("#tamano").val(), function() {
-          window.location = 'http://localhost:8000/game';
+          var partId = {{ partidas.last.id }} + 1;
+            window.location = 'http://localhost:8000/juego?n='+partId;
         });
         return false;
+      });
+
+      $('.actualizarNick').submit(function(){
+          $.post('http://localhost:8080/UpdateNickName?'+'ID='+$("#ID").val()+'&Nick='+$("#nick").val(), function() {
+          window.location = 'http://localhost:8000/principal/';
+        });
+          return false;
       });
     });
 

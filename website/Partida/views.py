@@ -3,9 +3,6 @@ from __future__ import unicode_literals
 from django.shortcuts import render, redirect
 
 
-from Partida.forms import PartidaForm
-
-
 
 # Create your views here.
 from Partida.models import Partida
@@ -20,14 +17,9 @@ def index(request):
 
     return render(request, 'PantallaPrincipal/principal.html',contexto)
 
-def partidaView(request):
+def juego(request):
+    partidas = Partida.objects.all()
+    jugadores = jugador.objects.all()
+    contexto = {'partidas':partidas,'jugadores':jugadores}
 
-    if request.method == 'POST':
-        form = PartidaForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect('Partida:index')
-    else:
-        form = PartidaForm()
-
-    return render(request,'PantallaPrincipal:principal.html',{'form':form})
+    return render(request, 'Juego/juego.html',contexto)

@@ -1,0 +1,220 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+    Juego
+{% endblock %}
+
+
+{% block header %}
+    <div class="container-fluid well span6">
+	    <div class="col-xs-12 col-md-8">
+                {%load static%}
+                <img src="{%static 'img/player.png'%}" class="img-circle" height="42" width="42">
+                 {% if user.is_authenticated %}
+                     {% for jugador in jugadores %}
+                        {% if jugador.IDJugador == user.id %}
+                            {% if jugador.NickName == "" %}
+                                <h5>User {{ user.username }}</h5>
+                            {% else %}
+                               <h5>User {{ jugador.NickName }}</h5>
+                            {% endif %}
+                        {% else %}
+                        {% endif %}
+                    {% endfor %}
+                     <h6>Email: {{ user.email }}</h6>
+                {% else %}
+                    Not logged in.
+                {% endif %}
+        </div>
+		<div class="col-xs-6 col-md-4">
+            <a href="/logout">
+			    <button type="button" class="btn btn-default btn-group pull-right">
+			    <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+			    </button>
+            </a>
+		</div>
+    </div>
+
+{% endblock %}
+
+
+{%block contect%}
+    <div class="hide">
+        IDpartida:<input type="text" id="IDpartida" name="IDpartida" value="True">
+    </div>
+
+    <div class="hide">
+        {% for jugador in jugadores %}
+            {% if jugador.IDJugador == user.id %}
+                IDJugador:<input type="text" id="IDJugador" name="IDJugador" value="{{ jugador.IDJugador }}">
+            {% endif %}
+        {% endfor %}
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-3">
+            <button type="button" onclick='pausar(this)' class="btn btn-primary btn-lg center-block">Pausar</button>
+        </div>
+        <div class="col-md-3">
+            <h3 class="text-right">Turno:
+            </h3>
+        </div>
+        <div class="col-md-3">
+            <h3 id="turno" class="text-left">
+                {% for jugador in jugadores %}
+                    {% if jugador.IDJugador == user.id %}
+                        {% for partida in partidas %}
+                            {% if partida.IDJugadorUno == jugador.IDJugador %}
+                                {% if partida.Estado == "EnJuego"%}
+                                    {{ partida.Turno }}
+                                {% endif %}
+                            {% endif %}
+                            {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                                {% if partida.Estado == "EnJuego"%}
+                                    {{ partida.Turno }}
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}    
+                    {% endif %}
+                {% endfor %}
+            </h3>
+        </div>
+        <div class="col-md-3">
+            <button type="button" onclick='rendirse(this)' class="btn btn-primary btn-lg center-block">Rendirse</button>
+        </div>
+    </div>
+
+    <div id="tablero" name="tablero" class="container tablero">
+        {% for jugador in jugadores %}
+            {% if jugador.IDJugador == user.id %}
+                {% for partida in partidas %}
+                    {% if partida.IDJugadorUno == jugador.IDJugador %}
+                        {% if partida.Estado == "EnJuego"%}
+                            <div class="hide">
+                                Tamano:<input type="text" id="Tamano" name="Tamano" value="{{ partida.TamannoTablero }}">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                        {% if partida.Estado == "EnJuego"%}
+                            <div class="hide">
+                                Tamano:<input type="text" id="Tamano" name="Tamano" value="{{ partida.TamannoTablero }}">
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}    
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    
+    
+    
+    
+    <div class="hide">
+
+        {% for jugador in jugadores %}
+            {% if jugador.IDJugador == user.id %}
+                {% for partida in partidas %}
+                    {% if partida.IDJugadorUno == jugador.IDJugador %}
+                        {% if partida.Estado == "EnJuego"%}
+                             IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorDOs }}">
+                        {% endif %}
+                    {% endif %}
+                    {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                        {% if partida.Estado == "EnJuego"%}
+                             IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorUno }}">
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
+
+
+
+<script type="text/javascript">
+
+    $( document ).ready(function() {
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, "\\$&");
+                var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        var paridaID = getParameterByName('n');
+        document.getElementById('IDpartida').value=paridaID;
+
+        document.getElementById('turno').value =paridaID;
+        $.post('http://localhost:8080/Unirse?'+'ID='+$("#IDJugador").val()+'&IDpartida='+$("#IDpartida").val());
+
+        var tam = $("#Tamano").val();
+        var container = document.createElement('div');
+            container.className = "div center-block";
+            container.id="div";
+            container.name="div";
+            var defVal = "800.00px";
+            container.style.width = defVal;
+            container.style.height = defVal;
+
+        var content = document.createElement('table');
+            content.className = "tabla";
+            content.id = "tabla";
+            content.name = "tabla";
+            content.style.width = "100%";
+            content.style.height = "100%";
+            content.style.tableLayout = "fixed";
+
+        for (i = 0; i <tam; i++) {
+            var row = document.createElement('tr');
+            row.className = "fila";
+            row.id="fila";
+            row.name="fila";
+            for (j = 0; j < tam; j++) {
+                var col = document.createElement('td');
+                col.className = "columna";
+                col.id="columna";
+                col.name="columna";
+                col.value = i+'-'+j;
+                col.style.width = $("#fila").height()+"px";
+                col.onclick = function () {
+                    this.style.backgroundImage = "url('../../static/img/player2.png')";
+                    this.onclick = false;
+                    console.log("asdasdasd");
+                    console.log(this.value[0]);
+                    console.log(this.value[2]);
+                    console.log($("#turno").text().trim());
+                    $.get('http://localhost:8080/Movimiento?'+'ID='+$("#IDpartida").val()+
+                        '&Turno='+$("#turno").text().trim()+
+                        '&x='+this.value[0]+
+                        '&y='+this.value[2]);
+
+
+                };
+                col.style.backgroundImage = "url('../../static/img/player0.png')";
+                col.style.backgroundSize = "100%";
+                row.appendChild(col);
+            }
+            content.appendChild(row);
+        }
+        container.appendChild(content);
+        document.body.appendChild(container);
+    });
+    function pausar(objButton){
+        $.post('http://localhost:8080/Pausar?'+'IDpartida='+$("#IDpartida").val());
+    }
+    function rendirse(objButton){
+        $.post('http://localhost:8080/Rendirse?'+'ID='+$("#IDOponente").val()+'&IDpartida='+$("#IDpartida").val(), function() {
+          window.location = 'http://localhost:8000/principal';
+        });
+        return false;
+    }
+
+
+</script>
+{% endblock %}
+

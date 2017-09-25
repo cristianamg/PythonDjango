@@ -16,19 +16,16 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth import views
-from django.contrib.auth import views as auth_views
+from Partida.views import juego
 
 urlpatterns = [
     url(r'^', include('autenticar.urls')),
     url(r'^accounts/profile/', include('Partida.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^oauth/', include('social_django.urls', namespace='social')),  # <--
-<<<<<<< HEAD
     url(r'^principal/', include('Partida.urls')),
-    url(r'^game/', include('NLinea.urls')),
-=======
+    url(r'^juego/',juego, name="juego"),
     url(r'^game/', include('NLinea.urls')),
     url(r'^logout/$', views.logout, {'next_page': '/'}),
 
->>>>>>> 7a84ecf22f46140e0398e30fd76475fec300ad01
 ]
