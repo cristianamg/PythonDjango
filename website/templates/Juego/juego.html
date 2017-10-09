@@ -53,26 +53,47 @@
 
 
     <div class="row">
-        <div class="col-md-3">
-            <button type="button" onclick='pausar(this)' class="btn btn-primary btn-lg center-block">Pausar</button>
+        <div class="col-md-2">
+            <button type="button" id="pausar" onclick='pausar(this)' class="btn btn-primary btn-lg center-block">Pausar</button>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <h3 class="text-right">Yo soy el jugador:
+            </h3>
+        </div>
+        <div class="col-md-2">
+                <h3 id="numJugador" class="text-left">
+                    {% for jugador in jugadores %}
+                        {% if jugador.IDJugador == user.id %}
+                            {% for partida in partidas %}
+                                {% if partida.Estado == "EnJuego"%}
+                                    {% if partida.IDJugadorUno == jugador.IDJugador %}
+                                        1
+                                    {% endif %}
+                                    {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                                        2
+                                    {% endif %}
+                                {% endif %}
+
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </h3>
+            </div>
+        <div class="col-md-2">
             <h3 class="text-right">Turno:
             </h3>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <h3 id="turno" class="text-left">
                 {% for jugador in jugadores %}
                     {% if jugador.IDJugador == user.id %}
                         {% for partida in partidas %}
-                            {% if partida.IDJugadorUno == jugador.IDJugador %}
-                                {% if partida.Estado == "EnJuego"%}
-                                    {{ partida.Turno }}
+                            {% if partida.Estado == "EnJuego"%}
+                                {% if partida.IDJugadorUno == jugador.IDJugador %}
+                                        {{ partida.Turno }}
                                 {% endif %}
-                            {% endif %}
-                            {% if partida.IDJugadorDOs == jugador.IDJugador%}
-                                {% if partida.Estado == "EnJuego"%}
-                                    {{ partida.Turno }}
+                                {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                                        {{ partida.Turno }}
                                 {% endif %}
                             {% endif %}
                         {% endfor %}    
@@ -80,8 +101,8 @@
                 {% endfor %}
             </h3>
         </div>
-        <div class="col-md-3">
-            <button type="button" onclick='rendirse(this)' class="btn btn-primary btn-lg center-block">Rendirse</button>
+        <div class="col-md-2">
+            <button type="button" id="rendirse" onclick='rendirse(this)' class="btn btn-primary btn-lg center-block">Rendirse</button>
         </div>
     </div>
 
@@ -107,10 +128,7 @@
             {% endif %}
         {% endfor %}
     </div>
-    
-    
-    
-    
+
     
     <div class="hide">
 
@@ -119,12 +137,18 @@
                 {% for partida in partidas %}
                     {% if partida.IDJugadorUno == jugador.IDJugador %}
                         {% if partida.Estado == "EnJuego"%}
-                             IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorDOs }}">
+                            Player1:<input type="text" id="Player1" name="Player1" value="True">
+                            Player2:<input type="text" id="Player2" name="Player2" value="False">
+                            IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorDOs }}">
+                            MiID:<input type="text" id="MiID" name="MiID" value="{{ partida.IDJugadorUno }}">
                         {% endif %}
                     {% endif %}
                     {% if partida.IDJugadorDOs == jugador.IDJugador%}
                         {% if partida.Estado == "EnJuego"%}
-                             IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorUno }}">
+                            Player2:<input type="text" id="Player2" name="Player2" value="True">
+                            Player1:<input type="text" id="Player1" name="Player1" value="False">
+                            IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorUno }}">
+                            MiID:<input type="text" id="MiID" name="MiID" value="{{ partida.IDJugadorDOs }}">
                         {% endif %}
                     {% endif %}
                 {% endfor %}
@@ -132,7 +156,28 @@
         {% endfor %}
     </div>
 
-
+    <div class="hide">
+        {% for jugador in jugadores %}
+            {% if jugador.IDJugador == user.id %}
+                {% for partida in partidas %}
+                    {% if partida.IDJugadorUno == jugador.IDJugador %}
+                        {% if partida.Estado == "EnJuego"%}
+                             JugadasP1:<input type="text" id="JugadasP1" name="JugadasP1" value="{{ partida.JugadasP1 }}">
+                             JugadasP2:<input type="text" id="JugadasP2" name="JugadasP2" value="{{ partida.JugadasP2 }}">
+                            IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorDOs }}">
+                        {% endif %}
+                    {% endif %}
+                    {% if partida.IDJugadorDOs == jugador.IDJugador%}
+                        {% if partida.Estado == "EnJuego"%}
+                             JugadasP1:<input type="text" id="JugadasP1" name="JugadasP1" value="{{ partida.JugadasP1 }}">
+                             JugadasP2:<input type="text" id="JugadasP2" name="JugadasP2" value="{{ partida.JugadasP2 }}">
+                             IDOponente:<input type="text" id="IDOponente" name="IDOponente" value="{{ partida.IDJugadorUno }}">
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    </div>
 
 <script type="text/javascript">
 
@@ -146,66 +191,137 @@
                 if (!results[2]) return '';
             return decodeURIComponent(results[2].replace(/\+/g, " "));
         }
-        var paridaID = getParameterByName('n');
-        document.getElementById('IDpartida').value=paridaID;
+        var partidaID = getParameterByName('n');
+        document.getElementById('IDpartida').value=partidaID;
 
-        document.getElementById('turno').value =paridaID;
+        document.getElementById('turno').value =partidaID;
         $.post('http://localhost:8080/Unirse?'+'ID='+$("#IDJugador").val()+'&IDpartida='+$("#IDpartida").val());
 
+
+
         var tam = $("#Tamano").val();
-        var container = document.createElement('div');
-            container.className = "div center-block";
-            container.id="div";
-            container.name="div";
-            var defVal = "800.00px";
-            container.style.width = defVal;
-            container.style.height = defVal;
+        if (tam == null){
 
-        var content = document.createElement('table');
-            content.className = "tabla";
-            content.id = "tabla";
-            content.name = "tabla";
-            content.style.width = "100%";
-            content.style.height = "100%";
-            content.style.tableLayout = "fixed";
+                document.getElementById("rendirse").onclick = false;
+                document.getElementById("pausar").onclick = false;
+                var finPartida = document.createElement('h1');
+                finPartida.className = "finPartida";
+                finPartida.id = "finPartida";
+                finPartida.name = "finPartida";
+                finPartida.textContent = "Partida Terminada";
+                document.body.appendChild(finPartida);
 
-        for (i = 0; i <tam; i++) {
-            var row = document.createElement('tr');
-            row.className = "fila";
-            row.id="fila";
-            row.name="fila";
-            for (j = 0; j < tam; j++) {
-                var col = document.createElement('td');
-                col.className = "columna";
-                col.id="columna";
-                col.name="columna";
-                col.value = i+'-'+j;
-                col.style.width = $("#fila").height()+"px";
-                col.onclick = function () {
-                    this.style.backgroundImage = "url('../../static/img/player2.png')";
-                    this.onclick = false;
-                    console.log("asdasdasd");
-                    console.log(this.value[0]);
-                    console.log(this.value[2]);
-                    console.log($("#turno").text().trim());
-                    $.get('http://localhost:8080/Movimiento?'+'ID='+$("#IDpartida").val()+
-                        '&Turno='+$("#turno").text().trim()+
-                        '&x='+this.value[0]+
-                        '&y='+this.value[2]);
-
-
+                var volver = document.createElement('button');
+                volver.className = "btn btn-primary btn-lg center-block";
+                volver.id = "volver";
+                volver.name = "volver";
+                volver.onclick = function () {
+                    window.location = 'http://localhost:8000/principal';
                 };
-                col.style.backgroundImage = "url('../../static/img/player0.png')";
-                col.style.backgroundSize = "100%";
-                row.appendChild(col);
-            }
-            content.appendChild(row);
+                volver.textContent = "Volver al inicio";
+                document.body.appendChild(volver);
+                return true;
         }
-        container.appendChild(content);
-        document.body.appendChild(container);
+
+
+            var container = document.createElement('div');
+                container.className = "div center-block";
+                container.id="div";
+                container.name="div";
+            var defVal = "800.00px";
+                container.style.width = defVal;
+                container.style.height = defVal;
+
+            var content = document.createElement('table');
+                content.className = "tabla";
+                content.id = "tabla";
+                content.name = "tabla";
+                content.style.width = "100%";
+                content.style.height = "100%";
+                content.style.tableLayout = "fixed";
+
+            for (i = 0; i <tam; i++) {
+                var row = document.createElement('tr');
+                row.className = "fila";
+                row.id="fila";
+                row.name="fila";
+                for (j = 0; j < tam; j++) {
+                    var col = document.createElement('td');
+                    col.className = "columna";
+                    col.id=i+'-'+j;
+                    col.name="columna";
+                    col.value = i+'-'+j;
+                    col.style.width = $("#fila").height()+"px";
+                    col.onclick = function () {
+
+                        this.style.backgroundImage = "url('../../static/img/player2.png')";
+
+                        this.onclick = false;
+                        $.post('http://localhost:8080/Movimiento?'+'ID='+$("#IDpartida").val()+
+                            '&Turno='+$("#turno").text().trim()+
+                            '&x='+this.value.split('-')[0]+
+                            '&y='+this.value.split('-')[1]+
+                            '&ListaJugadas1='+$("#JugadasP1").val()+
+                            '&ListaJugadas2='+$("#JugadasP2").val()+
+                            '&Tamano='+$("#Tamano").val()+
+                            '&IdJugador='+$("#MiID").val(),
+                            function() {
+                                window.location.reload(1);
+                            }
+                        );
+
+                    };
+                    col.style.backgroundImage = "url('../../static/img/player0.png')";
+                    col.style.backgroundSize = "100%";
+                    row.appendChild(col);
+                }
+                content.appendChild(row);
+            }
+            container.appendChild(content);
+            document.body.appendChild(container);
+
+
+        var movsP1 = $("#JugadasP1").val().replace("[","").replace("]","").split(',');
+        var movsP2 = $("#JugadasP2").val().replace("[","").replace("]","").split(',');
+
+        if (movsP1.length > 0) {
+            for (i = 0; i < movsP1.length; i++) {
+                if (document.getElementById(movsP1[i]) != null) {
+                    if (document.getElementById("Player2").value == "True") {
+                        document.getElementById(movsP1[i]).style.backgroundImage = "url('../../static/img/player1.png')";
+                        document.getElementById(movsP2[i]).onclick = null;
+                    } else {
+                        document.getElementById(movsP1[i]).style.backgroundImage = "url('../../static/img/player2.png')";
+                        document.getElementById(movsP2[i]).onclick = null;
+                    }
+                }
+            }
+        }
+        if (movsP2.length > 0) {
+            for (i = 0; i < movsP2.length; i++) {
+                if (document.getElementById(movsP2[i]) != null) {
+                    if (document.getElementById("Player2").value == "True") {
+                        document.getElementById(movsP2[i]).style.backgroundImage = "url('../../static/img/player2.png')";
+                        document.getElementById(movsP2[i]).onclick = null;
+                    } else {
+                        document.getElementById(movsP2[i]).style.backgroundImage = "url('../../static/img/player1.png')";
+                        document.getElementById(movsP2[i]).onclick = null;
+                    }
+                }
+            }
+        }
+
+        var numJugador = document.getElementById("numJugador").textContent.trim();
+
+        if (turno != numJugador){
+            setTimeout(function(){
+                window.location.reload(1);
+            }, 5000);
+        }
+
     });
     function pausar(objButton){
-        $.post('http://localhost:8080/Pausar?'+'IDpartida='+$("#IDpartida").val());
+        $.post('http://localhost:8080/Pausar?'+'ID='+$("#IDpartida").val());
     }
     function rendirse(objButton){
         $.post('http://localhost:8080/Rendirse?'+'ID='+$("#IDOponente").val()+'&IDpartida='+$("#IDpartida").val(), function() {
@@ -213,6 +329,8 @@
         });
         return false;
     }
+
+
 
 
 </script>

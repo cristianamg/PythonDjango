@@ -243,6 +243,9 @@
             $.post('http://localhost:8080/CrearJugador?'+'ID='+$("#ID").val());
        }
 
+        setTimeout(function(){
+            window.location.reload(1);
+        }, 20000);
     });
     function jugar(objButton){
         window.location.href = 'http://localhost:8000/juego/?n='+objButton.value;
